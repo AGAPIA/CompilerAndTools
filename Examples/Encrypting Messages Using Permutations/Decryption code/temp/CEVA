@@ -1,0 +1,50 @@
+	std::ifstream testTextFile("clearText.txt");
+	std::ofstream permutationTextFileWrite("permutationParallel.txt");
+	std::ofstream encryptedTextFile("encryptedTextParallel.txt");
+	std::string strAllContent, strLine, strEncrypted;
+	std::vector<int> arrPermutation;
+
+	if (testTextFile.is_open())
+	{
+		while (getline(testTextFile, strLine))
+		{
+			strAllContent.append(strLine.begin(), strLine.end());
+		}
+		testTextFile.close();
+	}
+	else
+	{
+		std::cout << "Failed to open file";
+		return;
+	}
+	std::srand(unsigned(std::time(0)));
+	for (size_t i = 0; i < strAllContent.size(); ++i)
+	{
+		arrPermutation.push_back(i);
+	}
+
+	std::random_shuffle(arrPermutation.begin(), arrPermutation.end());
+
+	permutationTextFileWrite << arrPermutation.size() << " ";
+	for (size_t i = 0; i < arrPermutation.size(); ++i)
+	{
+		permutationTextFileWrite << arrPermutation[i] << " ";
+	}
+	permutationTextFileWrite.close();
+
+
+	int nTextSize = (int)strAllContent.size();
+	
+
+	
+
+	int nPermutationSize = (int)arrPermutation.size();
+
+
+	int* pPermutation = new int[nPermutationSize];
+	for (int i = 0; i < nPermutationSize; ++i)
+	{
+		pPermutation[i] = arrPermutation[i];
+	}
+
+

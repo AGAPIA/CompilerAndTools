@@ -1,0 +1,11 @@
+std::string strFinalEncrypted;
+std::string strLocalStringA((char*)locala);
+std::string strLocalStringB((char*)localb);
+std::string strLocalStringC((char*)localc);
+strFinalEncrypted.append(strLocalStringA.begin(), strLocalStringA.end());
+strFinalEncrypted.append(strLocalStringB.begin(), strLocalStringB.end());
+strFinalEncrypted.append(strLocalStringC.begin(), strLocalStringC.end());
+std::ofstream encryptedTextFile("DecryptedTextParallel.txt");
+encryptedTextFile<<strFinalEncrypted;
+encryptedTextFile.close();
+

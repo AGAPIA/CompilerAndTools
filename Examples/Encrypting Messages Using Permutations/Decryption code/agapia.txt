@@ -1,0 +1,154 @@
+module MAIN{listen nil}{read nil}
+{
+   CITIRE # ( SLAVEA % SLAVEB % SLAVEC) # SCRIERE
+}{speak nil}{write nil}
+
+module CITIRE{listen nil}{read nil}
+{              
+std::string strLine;
+std::string strEncrypted;
+std::string strDecrypted;
+std::ifstream permutationTextFileRead("permutationParallel.txt");
+std::ifstream encryptedTextFileRead("encryptedTextParallel.txt");
+std::vector<int> arrPermutation;
+	
+	int nPermutationSize = 0;
+	permutationTextFileRead >> nPermutationSize;
+	for (int i = 0; i < nPermutationSize; ++i)
+	{
+		int nPermutationElement;
+		permutationTextFileRead >> nPermutationElement;
+		arrPermutation.push_back(nPermutationElement);
+	}
+	permutationTextFileRead.close();
+	if (encryptedTextFileRead.is_open())
+		{
+		while (getline(encryptedTextFileRead, strLine))
+		{
+		strEncrypted.append(strLine.begin(), strLine.end());
+		}
+		encryptedTextFileRead.close();
+		}
+
+std::vector<int> arrInverse;
+	for (size_t i = 0; i < arrPermutation.size(); i++)
+	{
+		for (size_t j = 0; j < arrPermutation.size(); j++)
+		{
+			if (arrPermutation[j] == i)
+			{
+				arrInverse.push_back(j);
+				break;
+			}
+		}
+	}
+
+	int nTextSize =(int)strEncrypted.size();
+	nPermutationSize = (int)arrPermutation.size();
+	int* perminverse= new int[nPermutationSize];
+	for (int i = 0; i < nPermutationSize; ++i)
+	{
+		perminverse[i] = arrInverse[i];
+	}
+
+perminversea = (int)perminverse;
+perminverseb = (int)perminverse;
+perminversec = (int)perminverse;
+int chunkSize = nPermutationSize / 3;
+chunksizea = (int)chunkSize;
+chunksizeb = (int)chunkSize;
+chunksizec = (int)chunkSize;
+npermsizea = (int)nPermutationSize;
+npermsizeb = (int)nPermutationSize;
+npermsizec = (int)nPermutationSize;
+
+char * cstrAllContent = new char[strEncrypted.size() + 1];
+std::copy(strEncrypted.begin(), strEncrypted.end(), cstrAllContent);
+cstrAllContent[strEncrypted.size()] = '\0'; 
+strallcontenta = (int)cstrAllContent;
+strallcontentb = (int)cstrAllContent;
+strallcontentc = (int)cstrAllContent;
+
+}{speak perminversea  : int, chunksizea : int, npermsizea : int, strallcontenta : int; perminverseb : int, chunksizeb : int, npermsizeb : int, strallcontentb : int  ; perminversec : int, chunksizec : int, npermsizec : int, strallcontentc : int}{write nil}
+
+module SLAVEA{listen perm : int, chunksizea : int, npermsizea : int, strallcontenta : int}{read nil}
+{
+std::string strEncryptedChunk;
+int*pPermutation=(int*)perm;
+std::string strText((char*)strallcontenta);
+int localsizea= chunksizea;
+for (int i = 0; i < localsizea; ++i)
+			{
+				strEncryptedChunk.append(strText.begin() + pPermutation[i], strText.begin() + pPermutation[i] + 1);
+			}
+
+
+char * cstrLocalEncrypted = new char[localsizea + 1];
+std::copy(strEncryptedChunk.begin(), strEncryptedChunk.end(), cstrLocalEncrypted);
+cstrLocalEncrypted[localsizea] = '\0'; 
+locala = (int)cstrLocalEncrypted;
+
+
+}{speak locala: int}{write nil}
+
+module SLAVEB{listen perm : int, chunksizeb : int, npermsizeb : int, strallcontentb : int}{read nil}
+{
+std::string strEncryptedChunk;
+int*pPermutation=(int*)perm;
+std::string strText((char*)strallcontentb);
+int localsizeb= chunksizeb;
+for (int i = localsizeb ; i < 2*localsizeb; ++i)
+			{
+				strEncryptedChunk.append(strText.begin() + pPermutation[i], strText.begin() + pPermutation[i] + 1);
+			}
+
+
+char * cstrLocalEncrypted = new char[localsizeb + 1];
+std::copy(strEncryptedChunk.begin(), strEncryptedChunk.end(), cstrLocalEncrypted);
+cstrLocalEncrypted[localsizeb] = '\0'; 
+localb = (int)cstrLocalEncrypted;
+
+
+}{speak localb: int}{write nil}
+
+module SLAVEC{listen perm : int, chunksizec : int, npermsizec : int, strallcontentc : int}{read nil}
+{
+std::string strEncryptedChunk;
+int*pPermutation=(int*)perm;
+std::string strText((char*)strallcontentc);
+int localsizec= chunksizec;
+int last=npermsizec;
+int nLocalChunkSize = last - 2*localsizec;
+for (int i = 2*localsizec; i < last ; ++i)
+			{
+				strEncryptedChunk.append(strText.begin() + pPermutation[i], strText.begin() + pPermutation[i] + 1);
+			}
+
+char * cstrLocalEncrypted = new char[nLocalChunkSize + 1];
+std::copy(strEncryptedChunk.begin(), strEncryptedChunk.end(), cstrLocalEncrypted);
+cstrLocalEncrypted[nLocalChunkSize] = '\0'; 
+localc = (int)cstrLocalEncrypted;
+
+}{speak localc: int}{write nil}
+
+
+
+module SCRIERE{listen locala : int; localb : int; localc : int}{read nil}
+{
+std::string strFinalEncrypted;
+std::string strLocalStringA((char*)locala);
+std::string strLocalStringB((char*)localb);
+std::string strLocalStringC((char*)localc);
+strFinalEncrypted.append(strLocalStringA.begin(), strLocalStringA.end());
+strFinalEncrypted.append(strLocalStringB.begin(), strLocalStringB.end());
+strFinalEncrypted.append(strLocalStringC.begin(), strLocalStringC.end());
+std::ofstream encryptedTextFile("DecryptedTextParallel.txt");
+encryptedTextFile<<strFinalEncrypted;
+encryptedTextFile.close();
+
+}{speak nil}{write nil}
+
+
+
+
+

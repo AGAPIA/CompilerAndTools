@@ -1,0 +1,30 @@
+module MAIN{listen nil}{read nil}
+{
+   CITIRE # ( SLAVEA % SLAVEB % SLAVEC) # SCRIERE
+}{speak nil}{write nil}
+
+module CITIRE{listen nil}{read nil}
+{              
+	@
+}{speak perminversea  : int, chunksizea : int, npermsizea : int, strallcontenta : int; perminverseb : int, chunksizeb : int, npermsizeb : int, strallcontentb : int  ; perminversec : int, chunksizec : int, npermsizec : int, strallcontentc : int}{write nil}
+
+module SLAVEA{listen perm : int, chunksizea : int, npermsizea : int, strallcontenta : int}{read nil}
+{
+	@
+}{speak locala: int}{write nil}
+
+module SLAVEB{listen perm : int, chunksizeb : int, npermsizeb : int, strallcontentb : int}{read nil}
+{
+	@
+}{speak localb: int}{write nil}
+
+module SLAVEC{listen perm : int, chunksizec : int, npermsizec : int, strallcontentc : int}{read nil}
+{
+	@
+}{speak localc: int}{write nil}
+
+module SCRIERE{listen locala : int; localb : int; localc : int}{read nil}
+{
+	@
+}{speak nil}{write nil}
+
