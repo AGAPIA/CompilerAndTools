@@ -1,6 +1,7 @@
 #include "CModuleCode.h"
 #include "CompilationBlackbox.h"
 #include "calc3_utils.h"
+#include "Redefinitions.h"
 #include <string>
 
 /*

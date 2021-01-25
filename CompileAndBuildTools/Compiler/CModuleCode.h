@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 #include "BaseNode.h"
+#include "Redefinitions.h"
 
 class CModuleCode : public IProgram
 {

@@ -4,6 +4,7 @@
 #include "CodeSerializationFactory.h"
 
 #include "calc3_utils.h"
+#include "Redefinitions.h"
 #include <fstream>
 
 // #include <windows.h>

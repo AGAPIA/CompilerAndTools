@@ -14,6 +14,7 @@ set(no_group_source_files
 source_group("" FILES ${no_group_source_files})
 
 set(Headers
+	"Redefinitions.h"
     "AgapiaAIExample.h"
     "AgapiaToCCode.h"
     "ASIGNMENTNode.h"
@@ -25,7 +26,7 @@ set(Headers
     "ClassTestUse.h"
     "CModuleCode.h"
     "CodeSerializationFactory.h"
-    "Common/ExecutionCommon.h"
+    "ExecutionCommon.h"
     "CommonTypes_Conditionals.h"
     "CommonUtils.h"
     "CompilationBlackbox.h"
@@ -111,6 +112,7 @@ set(ROOT_NAMESPACE Compiler)
 set_target_properties(${PROJECT_NAME} PROPERTIES
     VS_GLOBAL_KEYWORD "Win32Proj"
 )
+
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     set_target_properties(${PROJECT_NAME} PROPERTIES
         INTERPROCEDURAL_OPTIMIZATION_DISTRIBUTEDRELEASE "TRUE"
@@ -289,4 +291,15 @@ if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     )
 endif()
 target_link_libraries(${PROJECT_NAME} PRIVATE "${ADDITIONAL_LIBRARY_DEPENDENCIES}")
+find_package(MPI REQUIRED)
+message(STATUS "Run: ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${MPIEXEC_MAX_NUMPROCS} ${MPIEXEC_PREFLAGS} EXECUTABLE ${MPIEXEC_POSTFLAGS} ARGS")
+target_link_libraries(${PROJECT_NAME} PUBLIC MPI::MPI_CXX)
+option(REDEFINITIONS "Cross-platform symbol redefinitions" ON)
+if(REDEFINITIONS)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC REDEF=1)
+endif()
 
+# Or optional platform detection
+if(UNIX) 
+    target_compile_definitions(${PROJECT_NAME} PUBLIC REDEF=1)
+endif()
