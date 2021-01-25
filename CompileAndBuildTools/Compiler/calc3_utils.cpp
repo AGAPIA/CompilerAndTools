@@ -188,7 +188,7 @@ void *ABSTFactory::CreateAgapiaModule(const char *szModuleName, void *pInput, vo
 
 	// Create this defined module
 	ProgramIntermediateModule* pAgapiaModule = new ProgramIntermediateModule(yylineno);
-	pAgapiaModule->m_szModuleName = strdup(szModuleName);
+	pAgapiaModule->m_szModuleName = _strdup(szModuleName);
 	pAgapiaModule->m_bIsUserDefined = true;
 	
 	IProgram* pIProgram = (IProgram*) pBlock;
@@ -366,7 +366,7 @@ void* ABSTFactory::CreateWHILEProgram(int iWhileType, void *pConditionExpression
 void *ABSTFactory::CreateModuleRef(char *szModuleName)
 {
 	ProgramReference* pRefProgram = new ProgramReference(yylineno);
-	pRefProgram->m_strModuleReference = strdup(szModuleName);
+	pRefProgram->m_strModuleReference = _strdup(szModuleName);
 	return pRefProgram;
 }
 
