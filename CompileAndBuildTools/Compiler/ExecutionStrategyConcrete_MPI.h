@@ -45,7 +45,7 @@ public:
 	void OnExecuteTask(SchedulerCO::TaskDef *pTaskDef);
 	virtual void DoWork();
 
-	void ExecutionStrategy::OnModuleReadyForExecution(ProgramIntermediateModule *);
+	void OnModuleReadyForExecution(ProgramIntermediateModule *) override;
 };
 
 #endif

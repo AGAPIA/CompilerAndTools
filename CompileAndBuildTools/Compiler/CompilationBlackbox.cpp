@@ -275,7 +275,7 @@ void CompilationBlackbox::CleanupCompileFiles()
 		if (it->second->IsAtomicProgram())
 		{
 			char filePath[1024];
-			sprintf_s(filePath, "temp\\%s", it->first.c_str());
+			sprintf_s(filePath, 1024, "temp\\%s", it->first.c_str());
 			int res = remove(filePath);
 			/*
 			if (res < 0)

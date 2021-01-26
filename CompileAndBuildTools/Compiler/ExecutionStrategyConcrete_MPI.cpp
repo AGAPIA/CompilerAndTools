@@ -3,6 +3,7 @@
 #include "ExecutionStrategyConcrete_Serial.h"
 #include "CompilationBlackbox.h"
 #include <queue>
+#include <cstdint>
 #include <assert.h>
 #include "INTERMEDIATENode.h"
 #include "Streams.h"
@@ -25,7 +26,7 @@ void ExecutionStrategyConcrete_MPI_Master::OnModuleReadyForExecution(ProgramInte
 		SerializeModule(pModule, writer);
 
 		// Put in the task in progress queue
-		m_TasksInProgress.insert(std::make_pair((int)pModule, pModule));
+		m_TasksInProgress.insert(std::make_pair(reinterpret_cast<std::uintptr_t>(pModule), pModule));
 		OnTaskCreated(writer.GetBufferStart(), writer.GetAllocatedSize());
 	}
 	else
@@ -43,7 +44,7 @@ void ExecutionStrategyConcrete_MPI_Master::SerializeModule(ProgramIntermediateMo
 	writer.Alloc(iSerializedSize);
 
 	// Write the ID of the message
-	writer.WriteSimpleType<int>((int)pModule);
+	writer.WriteSimpleType<int>(reinterpret_cast<std::uintptr_t>(pModule));
 
 	// Write the text of the function (task) to execute
 	writer.WriteSimpleType<int>(iModuleNameLen);

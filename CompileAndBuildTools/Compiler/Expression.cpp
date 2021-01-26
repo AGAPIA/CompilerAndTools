@@ -4,6 +4,7 @@
 #include <assert.h>
 #include "InputTypes.h"
 #include <stdio.h>
+#include "Redefinitions.h"
 
 AsignmentCompatibility IExpression::gAsignmentCompatible[E_NUM_TYPES][E_NUM_TYPES]=
 {

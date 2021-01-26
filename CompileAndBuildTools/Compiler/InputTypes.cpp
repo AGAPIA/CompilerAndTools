@@ -9,6 +9,7 @@
 #include <assert.h>
 #include "WHILENode.h"
 #include "FOREachNode.h"
+#include "Redefinitions.h"
 
 #include "CodeSerializationFactory.h"
 

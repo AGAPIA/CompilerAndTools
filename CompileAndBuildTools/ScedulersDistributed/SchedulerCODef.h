@@ -24,7 +24,7 @@ namespace SchedulerCO
 	{
 	public:
 		TaskDef():
-			request(-1),
+			request(MPI_REQUEST_NULL),
 			flag(0),
 			pTaskData(NULL),
 			iSizeOfTask(0)

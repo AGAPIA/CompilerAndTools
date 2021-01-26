@@ -1,6 +1,7 @@
 #include "DECLARATIONNode.h"
 #include "Expressions.h"
 #include "ExecutionBlackbox.h"
+#include "Redefinitions.h"
 
 #include "calc3_utils.h"
 
