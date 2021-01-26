@@ -4,6 +4,7 @@
 #include "CompilationBlackbox.h"
 #include "BaseNode.h"
 #include "calc3_utils.h"
+#include "Redefinitions.h"
 
 #define INPUT_FILE_NAME	"MainInput.txt"
 

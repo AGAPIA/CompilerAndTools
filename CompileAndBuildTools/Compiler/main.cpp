@@ -1,10 +1,11 @@
 #include <iostream>
 #include "ExecutionBlackbox.h"
 
-#include <Windows.h>
+
 #include "Profiler.h"
 #include "calc3_utils.h"
-#include <direct.h>
+#include "Redefinitions.h"
+
 
 extern "C" 	FILE *yyin;
 extern int yyparse (void);
@@ -41,14 +42,23 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	int error = _mkdir(TEMP_DIR_NAME);
+	#if defined(_WIN32)
+    	int error = _mkdir(TEMP_DIR_NAME);
+	#else
+    	int error = mkdir(TEMP_DIR_NAME, 0777);
+	#endif
 	error = error;
 
 	// Pre init the execution strategy
 	ExecutionBlackbox::PreInitStrategy(argc, argv);
 
-	WCHAR dirPathBuff[1024];
-	GetCurrentDirectory(1024, dirPathBuff);
+	#if defined(_WIN32)
+		WCHAR dirPathBuff[1024];
+    	GetCurrentDirectory(1024, dirPathBuff);
+	#else
+		char dirPathBuff[1024];
+    	getcwd(dirPathBuff, sizeof(dirPathBuff));
+	#endif
 	std::wcout<<dirPathBuff<<std::endl;
 
 	// On debug we need to analyze and transform again. This is because we generally debug directly from Compiler solution.

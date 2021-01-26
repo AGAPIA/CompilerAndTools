@@ -13,36 +13,36 @@
 
 #include "CodeSerializationFactory.h"
 
-#ifdef RUN_FROM_VS_DEBUGGER
-// These are used to verify if an object writes on the stream the exact quantity it says to write
-#define SERIALIZE_CHECKER_INIT_OBJECT	\
-	const int iEstimatedSize = GetSerializedSize();	\
-	char* pBeforeWriteAddress = stream.GetHeaderAddress();
+// #ifdef RUN_FROM_VS_DEBUGGER
+// // These are used to verify if an object writes on the stream the exact quantity it says to write
+// #define SERIALIZE_CHECKER_INIT_OBJECT	\
+// 	const int iEstimatedSize = GetSerializedSize();	\
+// 	char* pBeforeWriteAddress = stream.GetHeaderAddress();
 
-#define SERIALIZE_CHECKER_END_OBJECT	\
-	char *pCurrentWriteAddress = stream.GetHeaderAddress();	\
-	assert(iEstimatedSize == (pCurrentWriteAddress - pBeforeWriteAddress) && "INCORRECT SIZE ESTIMATION FOR THIS OBJECT");
+// #define SERIALIZE_CHECKER_END_OBJECT	\
+// 	char *pCurrentWriteAddress = stream.GetHeaderAddress();	\
+// 	assert(iEstimatedSize == (pCurrentWriteAddress - pBeforeWriteAddress) && "INCORRECT SIZE ESTIMATION FOR THIS OBJECT");
 
-#define CSF_INIT_SERIALIZE_CHECK \
-	char* totalSizeAddressToWrite = stream.m_BufferPos; \
-	stream.WriteSimpleType(0);
+// #define CSF_INIT_SERIALIZE_CHECK \
+// 	char* totalSizeAddressToWrite = stream.m_BufferPos; \
+// 	stream.WriteSimpleType(0);
 
-#define CSF_END_SERIALIZE_CHECK	\
-	const int totalSize = stream.m_BufferPos - totalSizeAddressToWrite;	\
-	assert(expectedSize == totalSize && "A different data size than expected was written for expression serialization");	\
-	memcpy(totalSizeAddressToWrite, &totalSize, sizeof(int));
+// #define CSF_END_SERIALIZE_CHECK	\
+// 	const int totalSize = stream.m_BufferPos - totalSizeAddressToWrite;	\
+// 	assert(expectedSize == totalSize && "A different data size than expected was written for expression serialization");	\
+// 	memcpy(totalSizeAddressToWrite, &totalSize, sizeof(int));
 
-#define CSF_INIT_DESERIALIZE_CHECK	\
-	const char* beginDesAddr = stream.m_BufferPos;	\
-	int expectedSize = 0;	\
-	stream.ReadSimpleType(expectedSize);	
+// #define CSF_INIT_DESERIALIZE_CHECK	\
+// 	const char* beginDesAddr = stream.m_BufferPos;	\
+// 	int expectedSize = 0;	\
+// 	stream.ReadSimpleType(expectedSize);	
 
-#define CSF_END_DESERIALIZE_CHECK	\
-	const int dataRead = stream.m_BufferPos - beginDesAddr;	\
-	assert(dataRead == expectedSize && "Didn't read data as expected on deserialization process");
+// #define CSF_END_DESERIALIZE_CHECK	\
+// 	const int dataRead = stream.m_BufferPos - beginDesAddr;	\
+// 	assert(dataRead == expectedSize && "Didn't read data as expected on deserialization process");
 
-//assert(result != NULL && "Result variable was not set at the end of deserialization process");	\	
-#else
+// //assert(result != NULL && "Result variable was not set at the end of deserialization process");	\	
+// #else
 #define SERIALIZE_CHECKER_INIT_OBJECT
 #define SERIALIZE_CHECKER_END_OBJECT
 
@@ -50,7 +50,7 @@
 #define CSF_END_SERIALIZE_CHECK
 #define CSF_INIT_DESERIALIZE_CHECK
 #define CSF_END_DESERIALIZE_CHECK
-#endif
+// #endif
 
 
 BaseProcessInput::BaseProcessInput(EInputTypes eType, InputBlock* pParent) : 

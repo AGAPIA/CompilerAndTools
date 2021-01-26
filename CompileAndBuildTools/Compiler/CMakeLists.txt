@@ -289,15 +289,20 @@ if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
         "$(SolutionDir)$(Configuration)\ScedulersDistributed;"
         "msmpi"
     )
+# elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
+#     set(ADDITIONAL_LIBRARY_DEPENDENCIES
+#         "${SolutionDir}${Configuration}/ScedulersDistributed;"
+#     )
 endif()
+
 target_link_libraries(${PROJECT_NAME} PRIVATE "${ADDITIONAL_LIBRARY_DEPENDENCIES}")
 find_package(MPI REQUIRED)
 message(STATUS "Run: ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${MPIEXEC_MAX_NUMPROCS} ${MPIEXEC_PREFLAGS} EXECUTABLE ${MPIEXEC_POSTFLAGS} ARGS")
 target_link_libraries(${PROJECT_NAME} PUBLIC MPI::MPI_CXX)
-option(REDEFINITIONS "Cross-platform symbol redefinitions" ON)
-if(REDEFINITIONS)
-    target_compile_definitions(${PROJECT_NAME} PUBLIC REDEF=1)
-endif()
+# option(REDEFINITIONS "Cross-platform symbol redefinitions" ON)
+# if(REDEFINITIONS)
+#     target_compile_definitions(${PROJECT_NAME} PUBLIC REDEF=1)
+# endif()
 
 # Or optional platform detection
 if(UNIX) 
