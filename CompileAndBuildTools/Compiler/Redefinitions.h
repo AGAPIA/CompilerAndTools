@@ -38,6 +38,9 @@ typedef unsigned int BOOL;
 #endif
 
 #ifdef REDEF
+// possibly unsafe
+#define strcpy_s strncpy
+#define _fileno fileno
 #define _strdup strdup
 #define fprintf_s fprintf
 #define sprintf_s snprintf

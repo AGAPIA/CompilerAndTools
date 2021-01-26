@@ -1,7 +1,9 @@
 #include "../Compiler/ExecutionStrategy_Defines.h"
 #if EXECUTION_STRATEGY == USE_MPI_STRATEGY
 
-#include "stdafx.h"
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+	#include "stdafx.h"
+#endif
 #include "SchedulerCODef.h"
 #include <string.h>
 #include <assert.h>

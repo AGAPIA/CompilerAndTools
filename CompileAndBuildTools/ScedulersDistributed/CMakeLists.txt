@@ -217,4 +217,4 @@ if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     )
 endif()
 target_link_libraries(${PROJECT_NAME} PUBLIC "${ADDITIONAL_LIBRARY_DEPENDENCIES}")
-
+target_link_libraries(${PROJECT_NAME} PUBLIC MPI::MPI_CXX)
