@@ -286,7 +286,7 @@ if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
         "uuid;"
         "odbc32;"
         "odbccp32;"
-        "$(SolutionDir)$(Configuration)\ScedulersDistributed;"
+        "$(SolutionDir)$(Configuration)/ScedulersDistributed;"
         "msmpi"
     )
 # elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
