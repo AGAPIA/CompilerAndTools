@@ -1,5 +1,0 @@
-/home/marian/Documents/PPC/CompilerAndTools/CompileAndBuildTools/GenerateApp/build/CMakeFiles/rebuild_cache.dir
-/home/marian/Documents/PPC/CompilerAndTools/CompileAndBuildTools/GenerateApp/build/CMakeFiles/edit_cache.dir
-/home/marian/Documents/PPC/CompilerAndTools/CompileAndBuildTools/GenerateApp/build/GenerateApp/CMakeFiles/rebuild_cache.dir
-/home/marian/Documents/PPC/CompilerAndTools/CompileAndBuildTools/GenerateApp/build/GenerateApp/CMakeFiles/edit_cache.dir
-/home/marian/Documents/PPC/CompilerAndTools/CompileAndBuildTools/GenerateApp/build/GenerateApp/CMakeFiles/GenerateApp.dir
