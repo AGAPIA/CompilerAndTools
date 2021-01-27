@@ -4,12 +4,80 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
-#include <io.h>
-#include <Windows.h>
 #include <string.h>
 #include <list>
 #include <string>
+#include <assert.h>
+
+#ifdef __WIN32
+#include <Windows.h>
+#include <io.h>
 #include <direct.h>
+
+inline int access(const char *pathname, int mode)
+{
+	return _access(pathname, mode);
+}
+#endif
+
+
+#ifdef unix
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/sendfile.h>
+#include <sys/stat.h>
+
+#define fprintf_s fprintf
+#define sprintf_s snprintf
+
+typedef unsigned char BYTE;
+typedef unsigned short WORD;
+typedef unsigned int BOOL;
+typedef unsigned int DWORD;
+typedef char* LPTSTR;
+
+const BOOL FALSE = 0;
+const BOOL TRUE = 1;
+
+inline BOOL CopyFile(const char *fileName, const char *destName, BOOL failIfExists)
+{
+	int destFileFlag = O_WRONLY | O_CREAT;
+	if(failIfExists == TRUE)
+		destFileFlag |= O_EXCL;
+	
+	int sourceFile = open(fileName, O_RDONLY);
+	assert(sourceFile != -1);
+
+	struct stat sourceStat;
+    fstat(sourceFile, &sourceStat);
+
+	int destFile = open(destName, destFileFlag);
+
+	if(destFile == -1)
+		return FALSE;
+
+	sendfile(destFile, sourceFile, 0, sourceStat.st_size);
+
+	close(sourceFile);
+	close(destFile);
+	return TRUE;
+}
+
+inline int _mkdir(const char *path)
+{
+ 	return mkdir(path, S_IRWXU | S_IRWXG | S_IRWXO);
+}
+
+inline void GetCurrentDirectory(DWORD bufferLength, LPTSTR buffer)
+{
+	getcwd(buffer, bufferLength);
+}
+
+
+
+#endif
+
+
 
 // COMMENT THIS BEFORE RELEASE
 #define GENERATE_EXE_EACH_TIME_BEFORE_CODEGEN
@@ -47,7 +115,7 @@ bool GetMSBuildPath(char* buff)
 	}
 
 	strcpy(buff, path);
-	if (_access(buff, 0) == -1)
+	if (access(buff, 0) == -1)
 	{
 		printf("The MSBUILD.exe can't be found. Check the location specified in the environment variable %s again: current value %s", "AGAPIA_MSBUILDPATH", path);
 		return false;
@@ -63,17 +131,18 @@ BOOL CopyFileHelper(const char* filename, const char* buffDest)
 	BOOL res = CopyFile(filename, buffDest, FALSE);
 	if (res == 0)
 	{
-		DWORD dwErr = GetLastError();
-		if (dwErr == ERROR_ACCESS_DENIED)
-		{
+		// TODO: undo comments and port for linux
+		// DWORD dwErr = GetLastError();
+		// if (dwErr == ERROR_ACCESS_DENIED)
+		// {
 			printf("Can't copy file %s because you're not allowed. Reserved name\n", buffDest);
 			exit(0);
-		}
-		else
-		{
-			printf("Didn't succeed to copy file %s Verify if the file name is correct\n", buffDest);
-			exit(0);
-		}
+		// }
+		// else
+		// {
+		// 	printf("Didn't succeed to copy file %s Verify if the file name is correct\n", buffDest);
+		// 	exit(0);
+		// }
 	}		
 
 	return res;
