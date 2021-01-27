@@ -3,7 +3,6 @@
 #define REDEFINITIONS_H
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-	#include <Windows.h>
 	#include <direct.h>
 #else
 	#include <sys/stat.h>
@@ -11,7 +10,7 @@
 	#include "time.h"
 #endif
 
-
+#ifdef REDEF
 // Windows.h typedef to coerce the code into compiling on non-windows platforms
 #ifndef DWORD
 #define WINAPI
@@ -37,7 +36,6 @@ typedef unsigned short WORD;
 typedef unsigned int BOOL;
 #endif
 
-#ifdef REDEF
 // possibly unsafe
 #define strcpy_s strncpy
 #define _fileno fileno

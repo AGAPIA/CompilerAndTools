@@ -200,7 +200,7 @@ endif()
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     set(ADDITIONAL_LIBRARY_DEPENDENCIES
         "$<$<CONFIG:DistributedRelease>:"
-            "msmpi;"
+            # "msmpi;"
             "kernel32;"
             "user32;"
             "gdi32;"

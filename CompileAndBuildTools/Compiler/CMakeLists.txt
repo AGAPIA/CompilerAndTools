@@ -104,7 +104,7 @@ set(ALL_FILES
 ################################################################################
 add_executable(${PROJECT_NAME} ${ALL_FILES})
 
-add_precompiled_header(${PROJECT_NAME} "stdafx.h" ".")
+# add_precompiled_header(${PROJECT_NAME} "stdafx.h" ".")
 
 use_props(${PROJECT_NAME} "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
 set(ROOT_NAMESPACE Compiler)
@@ -162,9 +162,12 @@ elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
             "_DEBUG"
         ">"
         "$<$<CONFIG:IterativeRelease>:"
-            "NDEBUG"
+            "NDEBUG;"
+            "EXECUTION_STRATEGY_ITERATIVE"
         ">"
         "_CONSOLE;"
+        "_CRT_SECURE_NO_WARNINGS;"
+        "CRT_SECURE_NO_WARNINGS;"
         "UNICODE;"
         "_UNICODE"
     )
@@ -286,8 +289,8 @@ if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
         "uuid;"
         "odbc32;"
         "odbccp32;"
-        "$(SolutionDir)$(Configuration)/ScedulersDistributed;"
-        "msmpi"
+        # "$(SolutionDir)$(Configuration)/ScedulersDistributed;"
+        # "msmpi"
     )
 # elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
 #     set(ADDITIONAL_LIBRARY_DEPENDENCIES

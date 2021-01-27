@@ -5,6 +5,9 @@
 #include "Profiler.h"
 #include "calc3_utils.h"
 #include "Redefinitions.h"
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+	#include <Windows.h>
+#endif
 
 
 extern "C" 	FILE *yyin;
