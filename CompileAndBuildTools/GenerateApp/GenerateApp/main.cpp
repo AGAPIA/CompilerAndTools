@@ -8,8 +8,10 @@
 #include <list>
 #include <string>
 #include <assert.h>
+#include <filesystem>
+namespace fs = std::filesystem;
 
-#ifdef __WIN32
+#ifdef _WIN32
 #include <Windows.h>
 #include <io.h>
 #include <direct.h>
@@ -128,24 +130,12 @@ void Cleanup();
 
 BOOL CopyFileHelper(const char* filename, const char* buffDest)
 {
-	BOOL res = CopyFile(filename, buffDest, FALSE);
-	if (res == 0)
-	{
-		// TODO: undo comments and port for linux
-		// DWORD dwErr = GetLastError();
-		// if (dwErr == ERROR_ACCESS_DENIED)
-		// {
-			printf("Can't copy file %s because you're not allowed. Reserved name\n", buffDest);
-			exit(0);
-		// }
-		// else
-		// {
-		// 	printf("Didn't succeed to copy file %s Verify if the file name is correct\n", buffDest);
-		// 	exit(0);
-		// }
-	}		
-
-	return res;
+	try {
+		return static_cast<BOOL>(fs::copy_file(filename, buffDest));
+	} catch (fs::filesystem_error& e) {
+		printf("Could not copy %s: %s\n", filename, e.what());
+		exit(0);
+	}
 }
 
 void AnalyzeModules()
