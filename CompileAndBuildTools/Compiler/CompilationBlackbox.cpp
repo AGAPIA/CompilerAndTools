@@ -125,7 +125,7 @@ bool CompilationBlackbox::WriteCCodeFile()
 	}
 
 	char buff[1024];
-	sprintf_s(buff, 1024, "%s\\Compiler\\AgapiaToCCode.cpp", szAgapiaPath);
+	sprintf_s(buff, 1024, "%s/Compiler/AgapiaToCCode.cpp", szAgapiaPath);
 	f = fopen(buff, "w");
 	fprintf(f, "#include \"AgapiaToCCode.h\"\n");
 	fprintf(f, "#include \"ExecutionBlackbox.h\"\n");
@@ -164,11 +164,11 @@ bool CompilationBlackbox::WriteCCodeFile()
 void CompilationBlackbox::LoadAST()
 {
 	// [size | num modules | module 0 | ..... | module n-1]
-	ifstream inputFile("temp\\agapia.dat", ios::in | ios::binary);
+	ifstream inputFile("temp/agapia.dat", ios::in | ios::binary);
 
 	if (!inputFile.good())
 	{		
-		LOG(("LoadABT: can't find temp\\agapia.dat which contans the AST serialized. Try to run your program with \'f\' parameter to build the tree\n"));
+		LOG(("LoadABT: can't find temp/agapia.dat which contans the AST serialized. Try to run your program with \'f\' parameter to build the tree\n"));
 		assert(false);
 	}
 
@@ -214,7 +214,7 @@ void CompilationBlackbox::LoadAST()
 void CompilationBlackbox::SaveAST()
 {
 	// [size | num modules | module 0 | ..... | module n-1]
-	ofstream outputFile("temp\\agapia.dat", ios::out | ios::binary);
+	ofstream outputFile("temp/agapia.dat", ios::out | ios::binary);
 
 	if (!outputFile.good())
 	{
@@ -275,7 +275,7 @@ void CompilationBlackbox::CleanupCompileFiles()
 		if (it->second->IsAtomicProgram())
 		{
 			char filePath[1024];
-			sprintf_s(filePath, 1024, "temp\\%s", it->first.c_str());
+			sprintf_s(filePath, 1024, "temp/%s", it->first.c_str());
 			int res = remove(filePath);
 			/*
 			if (res < 0)
@@ -287,5 +287,5 @@ void CompilationBlackbox::CleanupCompileFiles()
 		}	
 	}
 
-	remove("temp\\generatedModules.txt");
+	remove("temp/generatedModules.txt");
 }
