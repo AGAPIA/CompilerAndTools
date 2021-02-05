@@ -490,7 +490,6 @@ int main()
 		fgets(lineBuff, 2048, fin);
 		// remove newline on linux
 		lineBuff[strcspn(lineBuff, "\r\n")] = '\0';
-		printf("%s\n", lineBuff);
 
 
 		if (feof(fin))

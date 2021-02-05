@@ -27,9 +27,7 @@ int main(int argc, char* argv[])
 	SetCurrentDirectory(wstr.c_str());
 #endif
 
-	printf("%s\n", "Before start watch");
 	gTotalGlobalWatch.Start();
-	printf("%s\n", "After start watch");
 
 	// Parse the parameters
 	if (argc > 1)
@@ -70,7 +68,6 @@ int main(int argc, char* argv[])
 #ifdef RUN_FROM_VS_DEBUGGER_NEW
 	if (gExecutionType == EXECT_GENERATE_CODE)
 	{
-		printf("%s\n", "On debug we need to analyze and transform again. This is because we generally debug directly from Compiler solution.");
 		RunDebugModulesAnalyzer();
 	}
 #endif
@@ -78,13 +75,11 @@ int main(int argc, char* argv[])
 	if (gExecutionType != EXECT_GENERATE_CODE && gUseSerializedAST)
 	{
 		// We already have the serialized tree, don't need to parse the file again
-		printf("%s\n", "We already have the serialized tree, don't need to parse the file again");
 		ABSTFactory::RunCompilation();
 	}
 	else
 	{
 		// Parse the file then execute RunCompilation
-		printf("%s\n", GetCompleteFilePathToSlnDirTemp("agapia_transf.txt"));
 		FILE *f = fopen(GetCompleteFilePathToSlnDirTemp("agapia_transf.txt"), "r");
 		if (f == NULL)
 		{
@@ -93,9 +88,7 @@ int main(int argc, char* argv[])
 
 		yyin = f;
 
-		printf("%s\n", "beforeyyparse");
 		yyparse();
-		printf("%s\n", "afteryyparse");
 	}
 
 	std::cout<<"Total execution time: "<<std::endl;
@@ -103,4 +96,3 @@ int main(int argc, char* argv[])
 
 	return 0;
 }
-

@@ -16,8 +16,6 @@
 
 void ExecutionStrategyConcrete_MPI_Master::OnModuleReadyForExecution(ProgramIntermediateModule* pModule)
 {
-		printf("%s\n", "uintptr_t0");
-
 	// Can be send to workers or only the master can execute this task ?
 	if (pModule->m_pCCodeObject->GetType() == E_NODE_TYPE_C_CODE_ZONE_ALL)
 	{
@@ -28,7 +26,6 @@ void ExecutionStrategyConcrete_MPI_Master::OnModuleReadyForExecution(ProgramInte
 		SerializeModule(pModule, writer);
 
 		// Put in the task in progress queue
-		printf("%s\n", "uintptr_t1");
 		m_TasksInProgress.insert(std::make_pair(reinterpret_cast<std::uintptr_t>(pModule), pModule));
 		OnTaskCreated(writer.GetBufferStart(), writer.GetAllocatedSize());
 	}
@@ -47,7 +44,6 @@ void ExecutionStrategyConcrete_MPI_Master::SerializeModule(ProgramIntermediateMo
 	writer.Alloc(iSerializedSize);
 
 	// Write the ID of the message
-		printf("%s\n", "uintptr_t2");
 	writer.WriteSimpleType<int>(reinterpret_cast<std::uintptr_t>(pModule));
 
 	// Write the text of the function (task) to execute
