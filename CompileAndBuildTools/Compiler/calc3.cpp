@@ -1054,6 +1054,8 @@ yy_stack_print (yybottom, yytop)
 #endif
 {
   YYFPRINTF (stderr, "Stack now");
+  printf("%s\n", "stacknow");
+
   for (; yybottom <= yytop; yybottom++)
     {
       int yybot = *yybottom;
@@ -1085,6 +1087,8 @@ yy_reduce_print (yyvsp, yylsp, yyrule)
     int yyrule;
 #endif
 {
+printf("%s\n", "yyy2");
+
   int yynrhs = yyr2[yyrule];
   int yyi;
   unsigned long int yylno = yyrline[yyrule];
@@ -1481,7 +1485,7 @@ yyparse ()
      action routines.  */
   YYSTYPE yyval;
   YYLTYPE yyloc;
-
+printf("%s\n", "parse");
 #if YYERROR_VERBOSE
   /* Buffer for error messages, and its allocated size.  */
   char yymsgbuf[128];
@@ -1502,6 +1506,7 @@ yyparse ()
   yystacksize = YYINITDEPTH;
 
   YYDPRINTF ((stderr, "Starting parse\n"));
+      printf("%s\n", "startingparse");
 
   yystate = 0;
   yyerrstatus = 0;
@@ -1517,10 +1522,13 @@ yyparse ()
   yylsp = yyls;
 
 #if YYLTYPE_IS_TRIVIAL
+      printf("%s\n", "trivial");
+
   /* Initialize the default location before parsing starts.  */
   yylloc.first_line   = yylloc.last_line   = 1;
   yylloc.first_column = yylloc.last_column = 1;
 #endif
+      printf("%s\n", "endif");
 
   goto yysetstate;
 
@@ -1534,14 +1542,20 @@ yyparse ()
 
  yysetstate:
   *yyssp = yystate;
+      printf("%s\n", "yystate");
 
   if (yyss + yystacksize - 1 <= yyssp)
     {
+      printf("%s\n", "b4overflow");
+
       /* Get the current used size of the three stacks, in elements.  */
       YYSIZE_T yysize = yyssp - yyss + 1;
 
+
 #ifdef yyoverflow
       {
+      printf("%s\n", "overflow");
+
 	/* Give user a chance to reallocate the stack.  Use copies of
 	   these so that the &'s don't force the real ones into
 	   memory.  */
@@ -1565,8 +1579,12 @@ yyparse ()
       }
 #else /* no yyoverflow */
 # ifndef YYSTACK_RELOCATE
+      printf("%s\n", "relocate");
+
       goto yyexhaustedlab;
 # else
+      printf("%s\n", "extend");
+
       /* Extend the stack our own way.  */
       if (YYMAXDEPTH <= yystacksize)
 	goto yyexhaustedlab;
@@ -1612,6 +1630,7 @@ yyparse ()
 | yybackup.  |
 `-----------*/
 yybackup:
+      printf("%s\n", "yybackup");
 
   /* Do appropriate processing given the current state.  Read a
      lookahead token if we need one and don't already have one.  */
@@ -1626,19 +1645,32 @@ yybackup:
   /* YYCHAR is either YYEMPTY or YYEOF or a valid lookahead symbol.  */
   if (yychar == YYEMPTY)
     {
-      YYDPRINTF ((stderr, "Reading a token: "));
+      printf("%s\n", "readingatoken");
+
+      // YYDPRINTF ((stderr, "Reading a token: "));
       yychar = YYLEX;
+      printf("%c\n", yychar);
+      printf("%s\n", "readtoken");
+
     }
 
   if (yychar <= YYEOF)
     {
+      printf("%s\n", "yyeof");
+
       yychar = yytoken = YYEOF;
       YYDPRINTF ((stderr, "Now at end of input.\n"));
+      printf("%s\n", "end input");
+
+
     }
   else
     {
+      printf("%s\n", "yytranslate");
       yytoken = YYTRANSLATE (yychar);
       YY_SYMBOL_PRINT ("Next token is", yytoken, &yylval, &yylloc);
+      printf("%s\n", "nexttokenis");
+
     }
 
   /* If the proper action on seeing token YYTOKEN is to reduce or to
@@ -1661,6 +1693,8 @@ yybackup:
     yyerrstatus--;
 
   /* Shift the lookahead token.  */
+      printf("%s\n", "shifting");
+
   YY_SYMBOL_PRINT ("Shifting", yytoken, &yylval, &yylloc);
 
   /* Discard the shifted token.  */
@@ -1676,6 +1710,8 @@ yybackup:
 | yydefault -- do the default action for the current state.  |
 `-----------------------------------------------------------*/
 yydefault:
+      printf("%s\n", "yydefault");
+
   yyn = yydefact[yystate];
   if (yyn == 0)
     goto yyerrlab;
@@ -1686,6 +1722,8 @@ yydefault:
 | yyreduce -- Do a reduction.  |
 `-----------------------------*/
 yyreduce:
+      printf("%s\n", "yyreduce");
+
   /* yyn is the number of a rule to reduce with.  */
   yylen = yyr2[yyn];
 
@@ -1709,6 +1747,7 @@ yyreduce:
 /* Line 1455 of yacc.c  */
 #line 89 "calc3.y"
     { 
+      printf("%s\n", "RunCompilation");
 			ABSTFactory::RunCompilation();
 		;}
     break;

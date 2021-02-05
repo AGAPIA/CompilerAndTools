@@ -432,7 +432,11 @@ const char* GetPathToSlnDir()
 		printf("ERROR: PLEASE DECLARE THE ENVIRONMENT VARIABLE AGAPIAPATH\n");
 		exit(0);
 	}
+	#ifdef _WIN32
 	sprintf_s(buff, 4096, "%s\\Compiler", szAgapiaPath);
+	#else
+	sprintf_s(buff, 4096, "%s/Compiler", szAgapiaPath);
+	#endif
 	return buff;
 }
 const char* GetCompleteFilePathToSlnDirTemp(const char* fileName)
@@ -444,8 +448,11 @@ const char* GetCompleteFilePathToSlnDirTemp(const char* fileName)
 		printf("ERROR: PLEASE DECLARE THE ENVIRONMENT VARIABLE AGAPIAPATH\n");
 		exit(0);
 	}
-
+	#ifdef _WIN32
 	sprintf_s(buff, 4096, "%s\\Compiler\\temp\\%s", szAgapiaPath, fileName);
+	#else
+	sprintf_s(buff, 4096, "%s/Compiler/temp/%s", szAgapiaPath, fileName);
+	#endif
 	return buff;
 }
 //----------------------------------------------------------------
@@ -461,7 +468,12 @@ void RunDebugModulesAnalyzer()
 		exit(0);
 	}
 
+	#ifdef _WIN32
 	sprintf_s(buff, 4096, "%s\\ModulesAnalyzer\\Debug\\ModulesAnalyzer.exe", szAgapiaPath);
+	#else
+	// todo: linux debugging
+	sprintf_s(buff, 4096, "%s/ModulesAnalyzer/Debug/ModulesAnalyzer.exe", szAgapiaPath);
+	#endif
 	const int res = system(buff);
 	if (res != 0)
 	{

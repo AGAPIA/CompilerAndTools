@@ -9,6 +9,7 @@
 #include <string>
 #include <assert.h>
 #include <filesystem>
+#include <fstream>
 namespace fs = std::filesystem;
 
 #ifdef _WIN32
@@ -91,7 +92,6 @@ char gCurrentDirPath[CURRDIRPATH_LEN];
 
 #if _WIN32
 #define PATH_TOAGAPIATOCPPFILECODE_FROM_SLNROOT "\\Compiler\\AgapiaToCCode.cpp"
-#define PATH_TOSOLMODIFYAPP_FROM_SLNROOT		"\\SolutionModifyApp\\SolutionModifyApp\\bin\\Release\\SolutionModifyApp.exe"
 #define PATH_TO_RELEASEEXE_ITER_FROM_SLNROOT	"\\IterativeRelease\\Compiler.exe"
 #define PATH_TO_DEBUGEXE_ITER_FROM_SLNROOT		"\\IterativeDebug\\Compiler.exe"
 #define PATH_TO_RELEASEEXE_DISTRI_FROM_SLNROOT	"\\DistributedRelease_Compiler\\Compiler.exe"
@@ -100,12 +100,11 @@ char gCurrentDirPath[CURRDIRPATH_LEN];
 #else
 
 #define PATH_TOAGAPIATOCPPFILECODE_FROM_SLNROOT "/Compiler/AgapiaToCCode.cpp"
-#define PATH_TOSOLMODIFYAPP_FROM_SLNROOT		"/SolutionModifyApp/SolutionModifyApp/bin/Release/SolutionModifyApp.exe"
-#define PATH_TO_RELEASEEXE_ITER_FROM_SLNROOT	"/IterativeRelease/Compiler.exe"
-#define PATH_TO_DEBUGEXE_ITER_FROM_SLNROOT		"/IterativeDebug/Compiler.exe"
-#define PATH_TO_RELEASEEXE_DISTRI_FROM_SLNROOT	"/DistributedRelease_Compiler/Compiler.exe"
-#define PATH_TO_DEBUGEXE_DISTRI_FROM_SLNROOT		"/DistributedDebug_Compiler/Compiler.exe"
-#define PATH_TO_MODULEANALYZER_TOOL_FROM_AGAPIAPATH	"/ModulesAnalyzer/Release/ModulesAnalyzer.exe"
+#define PATH_TO_RELEASEEXE_ITER_FROM_SLNROOT	"/build/Compiler/Compiler"
+#define PATH_TO_DEBUGEXE_ITER_FROM_SLNROOT		"/build/Compiler/Compiler"
+#define PATH_TO_RELEASEEXE_DISTRI_FROM_SLNROOT	"/build/Compiler/Compiler"
+#define PATH_TO_DEBUGEXE_DISTRI_FROM_SLNROOT		"/build/Compiler/Compiler"
+#define PATH_TO_MODULEANALYZER_TOOL_FROM_AGAPIAPATH	"/linux_bin/ModulesAnalyzer"
 #endif
 
 #define FILENAME_OF_TRANSFORMED_AGAPIA_FILE			"agapia_transf.txt"
@@ -115,6 +114,37 @@ char gCurrentDirPath[CURRDIRPATH_LEN];
 
 bool isDistributedRun = false;
 bool isDebug = false;
+
+//Modify Compiler CMakeLists.txt to include the files and directories given in Def.txt
+void ModifyCMakeLists(std::string CMakeListsPath) {
+    // Types of lines found in Def.txt
+    const auto NONE = 0;
+    const auto INCLUDE_FILE = 1;
+    const auto ADDITIONAL_INCLUDE_DIRECTORY = 2;
+    const auto ADDITIONAL_LIBRARY_DIRECTORY = 3;
+    const auto ADDITIONAL_LINKER_LIB_DLL_ETC = 4;
+    const auto ADDITIONAL_SOURCE_FILE = 5;
+
+    // open CMakeLists.txt in append mode (all data will be written to the end of the file)
+    std::ofstream g(CMakeListsPath, std::ios::app);
+    auto CurrentLineType = NONE;
+    std::ifstream f("Def.txt");
+    std::string line;
+    while (std::getline(f, line)) {
+        // if we find a line that starts with %, the current line type changes
+        if(line[0] == '%')
+            CurrentLineType++;
+        // we do nothing for lines of type NONE, INCLUDE_FILE or undefined (default case)
+        // todo: add more cases
+        else switch(CurrentLineType) {
+            case ADDITIONAL_SOURCE_FILE:
+                g << "add_executable(${PROJECT_NAME} " << line << ")\n";
+                break;
+            default:
+                break;
+        }
+    }
+}
 
 // Get the path of the MSBuild.exe path in the buffer given as parameter
 // Returns false if failed, true if succeeded
@@ -159,6 +189,7 @@ void AnalyzeModules()
 	char tempDest[CURRDIRPATH_LEN];
 	// Generate the agapia_transf.txt from agapia.txt
 	sprintf(tempPath, "%s%s", gStrAgapiaCompilerSlnPath, PATH_TO_MODULEANALYZER_TOOL_FROM_AGAPIAPATH);
+	printf("%s", tempPath);
 	res = system(tempPath);
 	if (res != 0)
 	{
@@ -348,25 +379,19 @@ void DoStep1(int argc, char* argv[])
 	fprintf_s(f, "%s", AGAPITOCCODE_FILE_TEXT);
 	fclose(f);
 
-	// Modify the vcxproj file
+	// Modify the CMakeLists file
 	//--------------------------------------------------------------------------------------------------------------------------------------------
-	// Save the Compiler.vxproj file
-	sprintf(buffDest, "%s/Compiler/Compiler_copy.vcxproj", gStrAgapiaCompilerSlnPath);
-	sprintf(temp, "%s/Compiler/Compiler.vcxproj", gStrAgapiaCompilerSlnPath);
+	// Save the CMakeLists file
+	sprintf(buffDest, "%s/Compiler/CMakeLists_copy.txt", gStrAgapiaCompilerSlnPath);
+	sprintf(temp, "%s/Compiler/CMakeLists.txt", gStrAgapiaCompilerSlnPath);
 	BOOL resC = CopyFileHelper(temp, buffDest);
 	if (resC != TRUE)
 	{
-		printf("Error: can't copy the Compiler.vcxproj file from %s\n", buffDest);
+		printf("Error: can't copy the CMakeLists.txt file from %s\n", buffDest);
 		exit(0);
 	}
 
-	sprintf(buffDest, "%s%s", gStrAgapiaCompilerSlnPath, PATH_TOSOLMODIFYAPP_FROM_SLNROOT);
-	int res = system(buffDest);
-	if (res)
-	{
-		printf("Failed to copy and change the solution. I will fail to include additional include dirs, libraries and linker to your app!!!\n");
-		exit(0);
-	}
+	ModifyCMakeLists(temp);
 
 	//---------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -388,58 +413,63 @@ void CopyGeneratedCodeFile()
 
 void DoStep3()
 {
-	const char* MSBULD_PARAMS = " /verbosity:quiet /maxcpucount:4 /nologo /consoleloggerparameters:Summary"; //"/verbosity:quiet /maxcpucount /nodeReuse:True /nologo /consoleloggerparameters:Summary";
-	const char* CONFIGURATION_DISTRIBUTED = (isDebug == false? " /property:Configuration=DistributedRelease" : " /property:Configuration=DistributedDebug");
-	const char* CONFIGURATION_ITERATIVE = (isDebug == false ? " /property:Configuration=IterativeRelease" : " /property:Configuration=IterativeDebug");
+	// const char* MSBULD_PARAMS = " /verbosity:quiet /maxcpucount:4 /nologo /consoleloggerparameters:Summary"; //"/verbosity:quiet /maxcpucount /nodeReuse:True /nologo /consoleloggerparameters:Summary";
+	// const char* CONFIGURATION_DISTRIBUTED = (isDebug == false? " /property:Configuration=DistributedRelease" : " /property:Configuration=DistributedDebug");
+	// const char* CONFIGURATION_ITERATIVE = (isDebug == false ? " /property:Configuration=IterativeRelease" : " /property:Configuration=IterativeDebug");
 
 	//printf("Step 3 begin\n");
 
-	char buff[CURRDIRPATH_LEN];
-	if (!GetMSBuildPath(buff))
-	{
-		printf("Cannot get the path to .NetFramework. Verify if you have the following file: %s. If not, then install .NET framework 4.0\n", buff);
-		exit(0);
-	}
+	// char buff[CURRDIRPATH_LEN];
+	// if (!GetMSBuildPath(buff))
+	// {
+	// 	printf("Cannot get the path to .NetFramework. Verify if you have the following file: %s. If not, then install .NET framework 4.0\n", buff);
+	// 	exit(0);
+	// }
 
-	char msBuildCommand[CURRDIRPATH_LEN*2];
-	sprintf_s(msBuildCommand, CURRDIRPATH_LEN*2, "\"\"%s\"  \"%s/Compiler.sln\"\"", buff, gStrAgapiaCompilerSlnPath);
+	// char msBuildCommand[CURRDIRPATH_LEN*2];
+	// sprintf_s(msBuildCommand, CURRDIRPATH_LEN*2, "\"\"%s\"  \"%s/Compiler.sln\"\"", buff, gStrAgapiaCompilerSlnPath);
 
-	// Check if we run either the distributed or iterative version
-	if (isDistributedRun)
-	{
-		strcat(msBuildCommand, CONFIGURATION_DISTRIBUTED);
-	}
-	else
-	{
-		strcat(msBuildCommand, CONFIGURATION_ITERATIVE);
-	}	
-	strcat(msBuildCommand, MSBULD_PARAMS);
+	// // Check if we run either the distributed or iterative version
+	// if (isDistributedRun)
+	// {
+	// 	strcat(msBuildCommand, CONFIGURATION_DISTRIBUTED);
+	// }
+	// else
+	// {
+	// 	strcat(msBuildCommand, CONFIGURATION_ITERATIVE);
+	// }	
+	// strcat(msBuildCommand, MSBULD_PARAMS);
 
 
 	//printf("The build command is: %s\n", msBuildCommand);
 	
 	// Tries 2 times just to be sure
-	int nrTries = 0;
-	int res = 0;
-	do {
-		nrTries++;
-		res = system(msBuildCommand);	// TODO here more
-		if (res)
-		{			
-			if (nrTries == 1)
-			{
-				printf ("------ Failed first time !!!! Trying one more time !!! ------\n");
-			}
-			else
-			{
-				printf("Couldn't execute the msbuild command over Compiler.sln :(\n");
-				CopyGeneratedCodeFile();
+	// int nrTries = 0;
+	// int res = 0;
+	// do {
+	// 	nrTries++;
+	// 	res = system(msBuildCommand);	// TODO here more
+	// 	if (res)
+	// 	{			
+	// 		if (nrTries == 1)
+	// 		{
+	// 			printf ("------ Failed first time !!!! Trying one more time !!! ------\n");
+	// 		}
+	// 		else
+	// 		{
+	// 			printf("Couldn't execute the msbuild command over Compiler.sln :(\n");
+	// 			CopyGeneratedCodeFile();
 				
-				Cleanup();
-				exit(0);
-			}
-		}	
-	}while(res != 0 && nrTries < 2);
+	// 			Cleanup();
+	// 			exit(0);
+	// 		}
+	// 	}	
+	// }while(res != 0 && nrTries < 2);
+	char temp[CURRDIRPATH_LEN];
+	sprintf(temp, "cmake -S %s -B %s/build", gStrAgapiaCompilerSlnPath, gStrAgapiaCompilerSlnPath);
+	system(temp);
+	sprintf(temp, "cmake --build %s/build", gStrAgapiaCompilerSlnPath);
+	system(temp);
 }
 
 void DoStep2()
@@ -458,7 +488,7 @@ void DoStep2()
 
 	// Add the generate argument to the executable
 	strcat(strCompilerExePath, " g");
-	//printf("Running compiler from: %s\n", strCompilerExePath);
+	printf("Running compiler from: %s\n", strCompilerExePath);
 	int res = system(strCompilerExePath);
 	if (res)
 	{

@@ -392,7 +392,12 @@ void AnalyzeCurrentModule(char *moduleName, ListOfCodeLines& listOfCodeLines, ch
 
 		// Create the new file and write the code
 		char moduleNameBuff[LINEBUFF_MAX_LENGTH];
+		#ifdef _WIN32
 		sprintf_s(moduleNameBuff, LINEBUFF_MAX_LENGTH, "temp\\%s", moduleName);
+	#else
+        sprintf_s(moduleNameBuff, LINEBUFF_MAX_LENGTH, "temp/%s", moduleName);
+    #endif
+		
 		FILE *f = fopen(moduleNameBuff, "w");
 		for (ListOfCodeLinesIter it = listOfCodeLines.begin(); it != listOfCodeLines.end(); it++)
 		{
@@ -452,18 +457,26 @@ int main()
 
 	fs::create_directory("temp");
 
-	fout = fopen("temp\\agapia_transf.txt", "w");
+	#ifdef _WIN32
+		fout = fopen("temp\\agapia_transf.txt", "w");
+	#else
+        fout = fopen("temp/agapia_transf.txt", "w");
+    #endif
 	if (fout == NULL)
 	{
         #ifdef _WIN32
             printf("Can't run module analyzer because I can't create the file \\temp\\agapia_trans.txt Error code: %d\n", GetLastError());
         #else
-            printf("Can't run module analyzer because I can't create the file \\temp\\agapia_trans.txt Error code: %s\n", strerror(errno));
+            printf("Can't run module analyzer because I can't create the file /temp/agapia_trans.txt Error code: %s\n", strerror(errno));
         #endif
 		return -1;
 	}
 
-	genModulesFile = fopen("temp\\" GENERATED_MODULE_FILES_NAME, "w");
+	#ifdef _WIN32
+		genModulesFile = fopen("temp\\" GENERATED_MODULE_FILES_NAME, "w");
+	#else
+		genModulesFile = fopen("temp/" GENERATED_MODULE_FILES_NAME, "w");
+	#endif
 	AnalysisState state = E_START;
 
 	char lineBuff[LINEBUFF_MAX_LENGTH];
@@ -475,6 +488,10 @@ int main()
 	{
 		lineNum++;
 		fgets(lineBuff, 2048, fin);
+		// remove newline on linux
+		lineBuff[strcspn(lineBuff, "\r\n")] = '\0';
+		printf("%s\n", lineBuff);
+
 
 		if (feof(fin))
 		{
