@@ -189,7 +189,7 @@ void AnalyzeModules()
 	char tempDest[CURRDIRPATH_LEN];
 	// Generate the agapia_transf.txt from agapia.txt
 	sprintf(tempPath, "%s%s", gStrAgapiaCompilerSlnPath, PATH_TO_MODULEANALYZER_TOOL_FROM_AGAPIAPATH);
-	printf("%s", tempPath);
+	// printf("%s", tempPath);
 	res = system(tempPath);
 	if (res != 0)
 	{
@@ -488,7 +488,7 @@ void DoStep2()
 
 	// Add the generate argument to the executable
 	strcat(strCompilerExePath, " g");
-	printf("Running compiler from: %s\n", strCompilerExePath);
+	// printf("Running compiler from: %s\n", strCompilerExePath);
 	int res = system(strCompilerExePath);
 	if (res)
 	{
@@ -513,7 +513,11 @@ void DoStep4()
 	}
 
 	char strCompilerDestPath[CURRDIRPATH_LEN];
+	#ifdef _WIN32
 	sprintf_s(strCompilerDestPath, CURRDIRPATH_LEN, "%s/AgapiaProgram.exe", gCurrentDirPath);
+	#else
+	sprintf_s(strCompilerDestPath, CURRDIRPATH_LEN, "%s/AgapiaProgram", gCurrentDirPath);
+	#endif
 
 	BOOL bRes = CopyFile(strCompilerExePath, strCompilerDestPath, FALSE);
 	if (bRes != TRUE)
