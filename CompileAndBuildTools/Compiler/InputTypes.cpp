@@ -13,6 +13,51 @@
 
 #include "CodeSerializationFactory.h"
 
+// ADDED
+#include <execinfo.h>
+#include <iostream>
+#include <cxxabi.h>
+#include <stdlib.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <sys/prctl.h>
+void printCallStack2() 
+{
+	std::wcout << "callstack:" << std::endl;\
+
+	void* callstack[1024];
+	int i, frames = backtrace(callstack, 1024);
+	char** strs = backtrace_symbols(callstack, frames);
+	for (i = 0; i < frames; ++i) 
+	{
+		int status;
+		char realName[256];
+		abi::__cxa_demangle(strs[i], realName, NULL, &status);
+		std::wcout << realName << std::endl;
+	}
+	free(strs);
+}
+
+void printCallStack() 
+{
+    char pid_buf[30];
+    sprintf(pid_buf, "%d", getpid());
+    char name_buf[512];
+    name_buf[readlink("/proc/self/exe", name_buf, 511)]=0;
+    prctl(PR_SET_PTRACER, PR_SET_PTRACER_ANY, 0, 0, 0);
+    int child_pid = fork();
+    if (!child_pid) 
+	{
+        dup2(2,1); // redirect output to stderr - edit: unnecessary?
+        execl("/usr/bin/gdb", "gdb", "--batch", "-n", "-ex", "thread", "-ex", "bt", name_buf, pid_buf, NULL);
+        abort(); /* If gdb failed to start */
+    } 
+	else
+	{
+        waitpid(child_pid,NULL,0);
+    }
+}
+
 // #ifdef RUN_FROM_VS_DEBUGGER
 // // These are used to verify if an object writes on the stream the exact quantity it says to write
 // #define SERIALIZE_CHECKER_INIT_OBJECT	\
@@ -1093,6 +1138,9 @@ IDataTypeItem* ItemTypeFactory::CreateInputItem(DataTypes eDataType, const char 
 		pItem = new StringVectorDataItem();
 		break;
 	default:
+		//ADDED
+		printCallStack();
+
 		assert(false && "Unknown type given! ");
 		return NULL;
 	}
