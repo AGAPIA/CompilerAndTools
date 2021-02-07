@@ -47,14 +47,16 @@ inline BOOL CopyFile(const char *fileName, const char *destName, BOOL failIfExis
 	int destFileFlag = O_WRONLY | O_CREAT;
 	if(failIfExists == TRUE)
 		destFileFlag |= O_EXCL;
-	
+	int destFileMode = S_IRWXU | S_IRWXG | S_IRWXO;
+
+
 	int sourceFile = open(fileName, O_RDONLY);
 	assert(sourceFile != -1);
 
 	struct stat sourceStat;
     fstat(sourceFile, &sourceStat);
 
-	int destFile = open(destName, destFileFlag);
+	int destFile = open(destName, destFileFlag, destFileMode);
 
 	if(destFile == -1)
 		return FALSE;
