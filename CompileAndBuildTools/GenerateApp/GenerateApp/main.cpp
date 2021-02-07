@@ -519,7 +519,7 @@ void DoStep4()
 	sprintf_s(strCompilerDestPath, CURRDIRPATH_LEN, "%s/AgapiaProgram", gCurrentDirPath);
 	#endif
 
-	BOOL bRes = CopyFile(strCompilerExePath, strCompilerDestPath, FALSE);
+	BOOL bRes = CopyFileHelper(strCompilerExePath, strCompilerDestPath);
 	if (bRes != TRUE)
 	{
 		printf("Failed to copy the final executable :(\n");

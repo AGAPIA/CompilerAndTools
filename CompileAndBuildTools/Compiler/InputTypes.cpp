@@ -1139,7 +1139,7 @@ IDataTypeItem* ItemTypeFactory::CreateInputItem(DataTypes eDataType, const char 
 		break;
 	default:
 		//ADDED
-		printCallStack();
+		// printCallStack();
 
 		assert(false && "Unknown type given! ");
 		return NULL;

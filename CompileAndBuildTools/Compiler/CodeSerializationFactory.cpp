@@ -13,7 +13,7 @@
 #include "InputTypes.h"
 #include "Streams.h"
 
-#ifdef RUN_FROM_VS_DEBUGGER
+// #ifdef RUN_FROM_VS_DEBUGGER
 #define CSF_INIT_SERIALIZE_CHECK \
 	char* totalSizeAddressToWrite = stream.m_BufferPos; \
 	stream.WriteSimpleType(0);
@@ -33,12 +33,12 @@
 	const int dataRead = stream.m_BufferPos - beginDesAddr;	\
 	assert(dataRead == expectedSize && "Didn't read data as expected on deserialization process");
 
-#else
-#define CSF_INIT_SERIALIZE_CHECK
-#define CSF_END_SERIALIZE_CHECK
-#define CSF_INIT_DESERIALIZE_CHECK
-#define CSF_END_DESERIALIZE_CHECK
-#endif
+// #else
+// #define CSF_INIT_SERIALIZE_CHECK
+// #define CSF_END_SERIALIZE_CHECK
+// #define CSF_INIT_DESERIALIZE_CHECK
+// #define CSF_END_DESERIALIZE_CHECK
+// #endif
 
 // ------------------------------ Programs' body --------------------------------------------
 int CodeSerializationFactory::GetSerializedModuleSize(ProgramIntermediateModule* moduleDecl)
