@@ -1209,7 +1209,7 @@ void SimpleProcessItem::PrintDebugInfo(int iSpaceLeft) const
 	PutsEmpty(iSpaceLeft);
 	printf("--- BEGIN: SIMPLE PROCESS ITEMS DEBUG ---\n");
 
-	PutsEmpty(iSpaceLeft);printf("There are %d small inputs here \n", m_InputItems.size());
+	PutsEmpty(iSpaceLeft);printf("There are %lu small inputs here \n", m_InputItems.size());
 	for (ListOfInputItemsConstIter it = m_InputItems.begin(); it != m_InputItems.end(); it++)
 	{
 		PutsEmpty(iSpaceLeft); (*it)->PrintDebugInfo(iSpaceLeft + 2);
@@ -1401,7 +1401,7 @@ void VectorProcessItem::PrintDebugInfo(int iSpaceLeft) const
 {
 	PutsEmpty(iSpaceLeft);
 	printf("--- BEGIN: VECTOR OF PROCESSES DEBUG ---\n");
-	PutsEmpty(iSpaceLeft + 2); printf("There are %d items currently \n", m_ArrayOfItemInputs.size());
+	PutsEmpty(iSpaceLeft + 2); printf("There are %lu items currently \n", m_ArrayOfItemInputs.size());
 	PutsEmpty(iSpaceLeft + 2); printf("The type of an item is: \n"); 
 	for (ArrayOfBaseProcessInputsConstIter it = m_TypeOfArrayItems.begin(); it != m_TypeOfArrayItems.end(); it++)
 		(*it)->PrintDebugInfo(iSpaceLeft + 2);
@@ -1688,7 +1688,7 @@ void InputBlock::PrintDebugInfo(int iSpaceLeft) const
 {
 	PutsEmpty(iSpaceLeft);
 	printf("--- BEGIN: INPUT BLOCK DEBUG ---\n");
-	PutsEmpty(iSpaceLeft);printf("There are %d inputs on this block\n", m_InputsInBlock.size());
+	PutsEmpty(iSpaceLeft);printf("There are %lu inputs on this block\n", m_InputsInBlock.size());
 	for (ArrayOfBaseProcessInputsConstIter it = m_InputsInBlock.begin(); it != m_InputsInBlock.end(); it++)
 	{
 		PutsEmpty(iSpaceLeft); (*it)->PrintDebugInfo(iSpaceLeft + 2);

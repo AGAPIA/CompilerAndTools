@@ -36,14 +36,15 @@ typedef unsigned short WORD;
 typedef unsigned int BOOL;
 #endif
 
-/*#include <assert.h>
-void inline strcpy_s(char *dst, size_t dstlen, const char *src) {
+#include <assert.h>
+static inline void portable_strcpy_s(char *dst, size_t dstlen, const char *src) {
 	int charactersWritten = snprintf(dst, dstlen, "%s", src);
 	// test for truncation (if the return value is >= dstlen, the output was truncated)
 	assert(charactersWritten < dstlen);
-}*/
+}
+#define strcpy_s portable_strcpy_s
 // POSSIBLY UNSAFE
-#define strcpy_s(dst, dstlen, src) strncpy((dst), (src), (dstlen))
+// #define strcpy_s(dst, dstlen, src) strncpy((dst), (src), (dstlen))
 #define _fileno fileno
 #define _strdup strdup
 #define fprintf_s fprintf
