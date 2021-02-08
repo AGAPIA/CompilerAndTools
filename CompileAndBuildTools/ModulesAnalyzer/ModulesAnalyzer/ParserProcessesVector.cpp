@@ -195,7 +195,7 @@ int ParserProcessesVector::ReadNextToken(const char *codeLine, ParsedToken& outp
 		
 		// Eat chars and setup the output !
 		outputToken.type = TOKEN_BUFFER_DATA_PAIR;
-		auto lenOfBufferPair = endPos - codeLine + 1;
+		int lenOfBufferPair = endPos - codeLine + 1;
 		for (int i = 0; i < lenOfBufferPair; i++)
 			EAT_CHAR_FROM_CODELINE(codeLine);
 	}
@@ -223,7 +223,7 @@ bool ParserProcessesVector::ParseVectorAccessLine(const char* codeLine, int line
 
 	// Search for the "@[" and try to figure out the accessed index
 	const char* strAcess = "@[";
-	const auto accessLen = strlen(strAcess);
+	const int accessLen = strlen(strAcess);
 	const char *strVecAccess = strstr(codeLine, strAcess);
 	if (strVecAccess == NULL)
 		return false;
@@ -239,7 +239,7 @@ bool ParserProcessesVector::ParseVectorAccessLine(const char* codeLine, int line
 	
 	// Verify if succeeded to eat correctly the vector accessed index
 	//-----------------------------------------------------------------------
-	auto nrCharsInIndex = strIndexParanthesisClose - (strVecAccess + accessLen);
+	int nrCharsInIndex = strIndexParanthesisClose - (strVecAccess + accessLen);
 	if (charsEaten != nrCharsInIndex || mVectorIndex.type == TOKEN_ERROR || mVectorIndex.type == TOKEN_STRING || mVectorIndex.type == TOKEN_NUMBER_FLOAT)
 	{
 		printf("Line %d, Error when parsing the vector access: couldn't parse the index of the array accessed between [ ]", lineNo);

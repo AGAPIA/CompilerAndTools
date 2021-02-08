@@ -488,9 +488,9 @@ int main()
 	{
 		lineNum++;
 		fgets(lineBuff, 2048, fin);
-		// remove newline on linux
-		lineBuff[strcspn(lineBuff, "\r\n")] = '\0';
-
+		// replace with windows newline
+		lineBuff[strcspn(lineBuff, "\n")] = '\0';
+		lineBuff[strcspn(lineBuff, "\r")] = '\n';
 
 		if (feof(fin))
 		{

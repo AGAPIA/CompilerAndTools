@@ -165,6 +165,7 @@ elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
             "NDEBUG;"
             "EXECUTION_STRATEGY_ITERATIVE"
         ">"
+        "EXECUTION_STRATEGY_ITERATIVE;"
         "_CONSOLE;"
         "_CRT_SECURE_NO_WARNINGS;"
         "CRT_SECURE_NO_WARNINGS;"

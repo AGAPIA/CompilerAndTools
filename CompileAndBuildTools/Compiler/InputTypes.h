@@ -627,7 +627,7 @@ public:
 
 	// Gets a pointer to a specified index from the current array.
 	// If it doesn't exists, it adds it
-	inline ArrayOfBaseProcessInputs& GetVectorItemByIndex(unsigned int iInt);
+	ArrayOfBaseProcessInputs& GetVectorItemByIndex(unsigned int iInt);
 
 	std::pair<int,int> GetIndexOfItemName(const char* szItemName);
 

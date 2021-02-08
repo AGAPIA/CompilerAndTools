@@ -66,9 +66,9 @@ namespace Streams
 		template <typename TYPE>
 		inline void WriteSimpleType(const TYPE& val)
 		{
-			#ifdef DEBUG_STREAMS_WRITE
+			// #ifdef DEBUG_STREAMS_WRITE
 			assert((m_BufferPos + sizeof(val)) <= m_BufferEnd && "Buffer overflow !");
-			#endif
+			// #endif
 
 			memcpy(m_BufferPos, &val, sizeof(val));
 			m_BufferPos += sizeof(val);

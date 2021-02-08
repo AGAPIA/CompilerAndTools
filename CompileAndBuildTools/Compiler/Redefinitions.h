@@ -49,8 +49,17 @@ static inline void portable_strcpy_s(char *dst, size_t dstlen, const char *src) 
 #define _strdup strdup
 #define fprintf_s fprintf
 #define sprintf_s snprintf
+#include <errno.h>
 // #define sprintf_s(buf, ...) snprintf((buf), sizeof(buf), __VA_ARGS__)
-#define fopen_s(pFile,filename,mode) ((*(pFile))=fopen((filename),  (mode)))==NULL
+static inline int fopen_s(FILE **f, const char *name, const char *mode) {
+    int ret = 0;
+    assert(f);
+    *f = fopen(name, mode);
+    /* Can't be sure about 1-to-1 mapping of errno and MS' errno_t */
+    if (!*f)
+        ret = errno;
+    return ret;
+}
 #endif
 
 #endif /* REDEFINITIONS_H */
