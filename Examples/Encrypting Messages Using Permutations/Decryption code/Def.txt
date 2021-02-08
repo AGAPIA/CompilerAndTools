@@ -1,0 +1,17 @@
+% // Include files
+#include <mpi.h>
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <algorithm>
+#include <vector>       
+#include <ctime>        
+#include <cstdlib>  
+#include <string>
+#include <chrono>
+#include <thread>
+% // Additional include directories
+% // Additional library directories
+% // Additional linker libs/dll etc
+% // Additional source files
+invers.cpp
