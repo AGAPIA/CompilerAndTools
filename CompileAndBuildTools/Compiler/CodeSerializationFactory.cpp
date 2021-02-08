@@ -13,32 +13,32 @@
 #include "InputTypes.h"
 #include "Streams.h"
 
-#ifdef RUN_FROM_VS_DEBUGGER
-#define CSF_INIT_SERIALIZE_CHECK \
-	char* totalSizeAddressToWrite = stream.m_BufferPos; \
-	stream.WriteSimpleType(0);
+// #ifdef RUN_FROM_VS_DEBUGGER
+// #define CSF_INIT_SERIALIZE_CHECK \
+// 	char* totalSizeAddressToWrite = stream.m_BufferPos; \
+// 	stream.WriteSimpleType(0);
 
-#define CSF_END_SERIALIZE_CHECK	\
-	const int totalSize = stream.m_BufferPos - totalSizeAddressToWrite;	\
-	assert(expectedSize == totalSize && "A different data size than expected was written for expression serialization");	\
-	memcpy(totalSizeAddressToWrite, &totalSize, sizeof(int));
+// #define CSF_END_SERIALIZE_CHECK	\
+// 	const int totalSize = stream.m_BufferPos - totalSizeAddressToWrite;	\
+// 	assert(expectedSize == totalSize && "A different data size than expected was written for expression serialization");	\
+// 	memcpy(totalSizeAddressToWrite, &totalSize, sizeof(int));
 
-#define CSF_INIT_DESERIALIZE_CHECK	\
-	const char* beginDesAddr = stream.m_BufferPos;	\
-	int expectedSize = 0;	\
-	stream.ReadSimpleType(expectedSize);	
+// #define CSF_INIT_DESERIALIZE_CHECK	\
+// 	const char* beginDesAddr = stream.m_BufferPos;	\
+// 	int expectedSize = 0;	\
+// 	stream.ReadSimpleType(expectedSize);	
 
-#define CSF_END_DESERIALIZE_CHECK  \
-	assert(result != NULL && "Result variable was not set at the end of deserialization process");	\
-	const int dataRead = stream.m_BufferPos - beginDesAddr;	\
-	assert(dataRead == expectedSize && "Didn't read data as expected on deserialization process");
+// #define CSF_END_DESERIALIZE_CHECK  \
+// 	assert(result != NULL && "Result variable was not set at the end of deserialization process");	\
+// 	const int dataRead = stream.m_BufferPos - beginDesAddr;	\
+// 	assert(dataRead == expectedSize && "Didn't read data as expected on deserialization process");
 
-#else
+// #else
 #define CSF_INIT_SERIALIZE_CHECK
 #define CSF_END_SERIALIZE_CHECK
 #define CSF_INIT_DESERIALIZE_CHECK
 #define CSF_END_DESERIALIZE_CHECK
-#endif
+// #endif
 
 // ------------------------------ Programs' body --------------------------------------------
 int CodeSerializationFactory::GetSerializedModuleSize(ProgramIntermediateModule* moduleDecl)

@@ -38,7 +38,7 @@ class ProgramFOREACH : public ProgramBase
 {
 public:
 	ProgramFOREACH(int lineNo) : ProgramBase(E_NODE_TYPE_FOREACH, lineNo), m_pValueToGo(NULL), m_bExpanded(false), m_bShouldExpand(false),
-					m_pBaseChildProgram(NULL), m_pIterationChilds(NULL), m_eType(E_FOREACH_UNDEFINED), m_iNumIterationChilds(NULL), m_FullArrayBuffered(NULL), m_iNrFinishedInternalPrograms(0)
+					m_pBaseChildProgram(NULL), m_pIterationChilds(NULL), m_eType(E_FOREACH_UNDEFINED), m_iNumIterationChilds(0), m_FullArrayBuffered(NULL), m_iNrFinishedInternalPrograms(0)
 	{}
 
 	virtual ProgramBase* Clone();

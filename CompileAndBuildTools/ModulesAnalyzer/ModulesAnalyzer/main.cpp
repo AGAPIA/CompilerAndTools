@@ -1,9 +1,20 @@
 #include <stdio.h>
 #include <string>
+#include <cstring>
 #include <list>
 #include "ParserProcessesVector.h"
-#include <windows.h>
-#include <direct.h>
+
+//use filesystem for cross-platform directory creation
+#include <filesystem>
+namespace fs = std::filesystem;
+
+#ifdef _WIN32
+ #include <windows.h>
+#endif
+
+#ifdef unix
+ #define sprintf_s snprintf
+#endif
 
 #define GENERATED_MODULE_FILES_NAME	 "generatedModules.txt"
 
@@ -39,7 +50,7 @@ void PrintError(char *buff)
 {
 	static char errBuff[1024];
 	sprintf_s(errBuff, 1024, "Line %d, Error: %s", lineNum, buff);
-	printf(errBuff);
+	printf("%s", errBuff);
 	fclose(fin);
 	fclose(fout);
 	exit(1);
@@ -283,10 +294,10 @@ void AnalyzeCurrentModule(char *moduleName, ListOfCodeLines& listOfCodeLines, ch
 	// see if the module decl line contains an execution specifier
 	bool isAtomicModule = true;
 
-	char* agapiaKeywords[2]={"while_", "for_"};
+	std::string agapiaKeywords[2]={"while_", "for_"};
 	for (int i = 0; i < 2; i++)
 	{
-		char* keyword = agapiaKeywords[i];
+		const char* keyword = agapiaKeywords[i].c_str();
 		for (ListOfCodeLinesIter it = listOfCodeLines.begin(); it != listOfCodeLines.end(); it++)
 			if (strstr(it->c_str(), keyword))
 			{
@@ -296,7 +307,7 @@ void AnalyzeCurrentModule(char *moduleName, ListOfCodeLines& listOfCodeLines, ch
 
 	if (isAtomicModule)
 	{
-		char *compositionOps[3] = {"#", "$", "%"};
+		std::string compositionOps[3] = {"#", "$", "%"};
 		for (int i = 0; i < 3; i++)
 		{
 			for (ListOfCodeLinesIter it = listOfCodeLines.begin(); it != listOfCodeLines.end(); it++)
@@ -304,7 +315,7 @@ void AnalyzeCurrentModule(char *moduleName, ListOfCodeLines& listOfCodeLines, ch
 				const char *str = it->c_str();
 				do 
 				{
-					const char *opAddr = strstr(str, compositionOps[i]);
+					const char *opAddr = strstr(str, compositionOps[i].c_str());
 					if (opAddr == NULL)	// Not found on this line, exit
 						break;
 
@@ -317,7 +328,7 @@ void AnalyzeCurrentModule(char *moduleName, ListOfCodeLines& listOfCodeLines, ch
 					if (!isBetweenCommas && !strstr(str, ";"))
 					{
 						// 3. For '%' we can allow if the right and left side contains identifiers or numbers ?						
-						if (strcmp(compositionOps[i], "%") == 0)
+						if (strcmp(compositionOps[i].c_str(), "%") == 0)
 						{
 							if (!IsModuloForNumbers(opAddr, str))
 							{
@@ -381,7 +392,12 @@ void AnalyzeCurrentModule(char *moduleName, ListOfCodeLines& listOfCodeLines, ch
 
 		// Create the new file and write the code
 		char moduleNameBuff[LINEBUFF_MAX_LENGTH];
+		#ifdef _WIN32
 		sprintf_s(moduleNameBuff, LINEBUFF_MAX_LENGTH, "temp\\%s", moduleName);
+	#else
+        sprintf_s(moduleNameBuff, LINEBUFF_MAX_LENGTH, "temp/%s", moduleName);
+    #endif
+		
 		FILE *f = fopen(moduleNameBuff, "w");
 		for (ListOfCodeLinesIter it = listOfCodeLines.begin(); it != listOfCodeLines.end(); it++)
 		{
@@ -439,17 +455,28 @@ int main()
 		return -1;
 	}
 
-	_mkdir("temp");
+	fs::create_directory("temp");
 
-	fout = fopen("temp\\agapia_transf.txt", "w");
+	#ifdef _WIN32
+		fout = fopen("temp\\agapia_transf.txt", "w");
+	#else
+        fout = fopen("temp/agapia_transf.txt", "w");
+    #endif
 	if (fout == NULL)
 	{
-		int reason = GetLastError();
-		printf("Can't run module analyzer because I can't create the file \\temp\\agapia_trans.txt Error code: %d\n", reason);
+        #ifdef _WIN32
+            printf("Can't run module analyzer because I can't create the file \\temp\\agapia_trans.txt Error code: %d\n", GetLastError());
+        #else
+            printf("Can't run module analyzer because I can't create the file /temp/agapia_trans.txt Error code: %s\n", strerror(errno));
+        #endif
 		return -1;
 	}
 
-	genModulesFile = fopen("temp\\" GENERATED_MODULE_FILES_NAME, "w");
+	#ifdef _WIN32
+		genModulesFile = fopen("temp\\" GENERATED_MODULE_FILES_NAME, "w");
+	#else
+		genModulesFile = fopen("temp/" GENERATED_MODULE_FILES_NAME, "w");
+	#endif
 	AnalysisState state = E_START;
 
 	char lineBuff[LINEBUFF_MAX_LENGTH];
@@ -461,6 +488,9 @@ int main()
 	{
 		lineNum++;
 		fgets(lineBuff, 2048, fin);
+		// replace with windows newline
+		lineBuff[strcspn(lineBuff, "\n")] = '\0';
+		lineBuff[strcspn(lineBuff, "\r")] = '\n';
 
 		if (feof(fin))
 		{

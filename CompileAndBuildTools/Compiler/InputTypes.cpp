@@ -9,39 +9,85 @@
 #include <assert.h>
 #include "WHILENode.h"
 #include "FOREachNode.h"
+#include "Redefinitions.h"
 
 #include "CodeSerializationFactory.h"
 
-#ifdef RUN_FROM_VS_DEBUGGER
-// These are used to verify if an object writes on the stream the exact quantity it says to write
-#define SERIALIZE_CHECKER_INIT_OBJECT	\
-	const int iEstimatedSize = GetSerializedSize();	\
-	char* pBeforeWriteAddress = stream.GetHeaderAddress();
+// ADDED
+#include <execinfo.h>
+#include <iostream>
+#include <cxxabi.h>
+#include <stdlib.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <sys/prctl.h>
+void printCallStack2() 
+{
+	std::wcout << "callstack:" << std::endl;\
 
-#define SERIALIZE_CHECKER_END_OBJECT	\
-	char *pCurrentWriteAddress = stream.GetHeaderAddress();	\
-	assert(iEstimatedSize == (pCurrentWriteAddress - pBeforeWriteAddress) && "INCORRECT SIZE ESTIMATION FOR THIS OBJECT");
+	void* callstack[1024];
+	int i, frames = backtrace(callstack, 1024);
+	char** strs = backtrace_symbols(callstack, frames);
+	for (i = 0; i < frames; ++i) 
+	{
+		int status;
+		char realName[256];
+		abi::__cxa_demangle(strs[i], realName, NULL, &status);
+		std::wcout << realName << std::endl;
+	}
+	free(strs);
+}
 
-#define CSF_INIT_SERIALIZE_CHECK \
-	char* totalSizeAddressToWrite = stream.m_BufferPos; \
-	stream.WriteSimpleType(0);
+void printCallStack() 
+{
+    char pid_buf[30];
+    sprintf(pid_buf, "%d", getpid());
+    char name_buf[512];
+    name_buf[readlink("/proc/self/exe", name_buf, 511)]=0;
+    prctl(PR_SET_PTRACER, PR_SET_PTRACER_ANY, 0, 0, 0);
+    int child_pid = fork();
+    if (!child_pid) 
+	{
+        dup2(2,1); // redirect output to stderr - edit: unnecessary?
+        execl("/usr/bin/gdb", "gdb", "--batch", "-n", "-ex", "thread", "-ex", "bt", name_buf, pid_buf, NULL);
+        abort(); /* If gdb failed to start */
+    } 
+	else
+	{
+        waitpid(child_pid,NULL,0);
+    }
+}
 
-#define CSF_END_SERIALIZE_CHECK	\
-	const int totalSize = stream.m_BufferPos - totalSizeAddressToWrite;	\
-	assert(expectedSize == totalSize && "A different data size than expected was written for expression serialization");	\
-	memcpy(totalSizeAddressToWrite, &totalSize, sizeof(int));
+// #ifdef RUN_FROM_VS_DEBUGGER
+// // These are used to verify if an object writes on the stream the exact quantity it says to write
+// #define SERIALIZE_CHECKER_INIT_OBJECT	\
+// 	const int iEstimatedSize = GetSerializedSize();	\
+// 	char* pBeforeWriteAddress = stream.GetHeaderAddress();
 
-#define CSF_INIT_DESERIALIZE_CHECK	\
-	const char* beginDesAddr = stream.m_BufferPos;	\
-	int expectedSize = 0;	\
-	stream.ReadSimpleType(expectedSize);	
+// #define SERIALIZE_CHECKER_END_OBJECT	\
+// 	char *pCurrentWriteAddress = stream.GetHeaderAddress();	\
+// 	assert(iEstimatedSize == (pCurrentWriteAddress - pBeforeWriteAddress) && "INCORRECT SIZE ESTIMATION FOR THIS OBJECT");
 
-#define CSF_END_DESERIALIZE_CHECK	\
-	const int dataRead = stream.m_BufferPos - beginDesAddr;	\
-	assert(dataRead == expectedSize && "Didn't read data as expected on deserialization process");
+// #define CSF_INIT_SERIALIZE_CHECK \
+// 	char* totalSizeAddressToWrite = stream.m_BufferPos; \
+// 	stream.WriteSimpleType(0);
 
-//assert(result != NULL && "Result variable was not set at the end of deserialization process");	\	
-#else
+// #define CSF_END_SERIALIZE_CHECK	\
+// 	const int totalSize = stream.m_BufferPos - totalSizeAddressToWrite;	\
+// 	assert(expectedSize == totalSize && "A different data size than expected was written for expression serialization");	\
+// 	memcpy(totalSizeAddressToWrite, &totalSize, sizeof(int));
+
+// #define CSF_INIT_DESERIALIZE_CHECK	\
+// 	const char* beginDesAddr = stream.m_BufferPos;	\
+// 	int expectedSize = 0;	\
+// 	stream.ReadSimpleType(expectedSize);	
+
+// #define CSF_END_DESERIALIZE_CHECK	\
+// 	const int dataRead = stream.m_BufferPos - beginDesAddr;	\
+// 	assert(dataRead == expectedSize && "Didn't read data as expected on deserialization process");
+
+// //assert(result != NULL && "Result variable was not set at the end of deserialization process");	\	
+// #else
 #define SERIALIZE_CHECKER_INIT_OBJECT
 #define SERIALIZE_CHECKER_END_OBJECT
 
@@ -49,7 +95,7 @@
 #define CSF_END_SERIALIZE_CHECK
 #define CSF_INIT_DESERIALIZE_CHECK
 #define CSF_END_DESERIALIZE_CHECK
-#endif
+// #endif
 
 
 BaseProcessInput::BaseProcessInput(EInputTypes eType, InputBlock* pParent) : 
@@ -1092,6 +1138,9 @@ IDataTypeItem* ItemTypeFactory::CreateInputItem(DataTypes eDataType, const char 
 		pItem = new StringVectorDataItem();
 		break;
 	default:
+		//ADDED
+		// printCallStack();
+
 		assert(false && "Unknown type given! ");
 		return NULL;
 	}
@@ -1208,7 +1257,7 @@ void SimpleProcessItem::PrintDebugInfo(int iSpaceLeft) const
 	PutsEmpty(iSpaceLeft);
 	printf("--- BEGIN: SIMPLE PROCESS ITEMS DEBUG ---\n");
 
-	PutsEmpty(iSpaceLeft);printf("There are %d small inputs here \n", m_InputItems.size());
+	PutsEmpty(iSpaceLeft);printf("There are %lu small inputs here \n", m_InputItems.size());
 	for (ListOfInputItemsConstIter it = m_InputItems.begin(); it != m_InputItems.end(); it++)
 	{
 		PutsEmpty(iSpaceLeft); (*it)->PrintDebugInfo(iSpaceLeft + 2);
@@ -1400,7 +1449,7 @@ void VectorProcessItem::PrintDebugInfo(int iSpaceLeft) const
 {
 	PutsEmpty(iSpaceLeft);
 	printf("--- BEGIN: VECTOR OF PROCESSES DEBUG ---\n");
-	PutsEmpty(iSpaceLeft + 2); printf("There are %d items currently \n", m_ArrayOfItemInputs.size());
+	PutsEmpty(iSpaceLeft + 2); printf("There are %lu items currently \n", m_ArrayOfItemInputs.size());
 	PutsEmpty(iSpaceLeft + 2); printf("The type of an item is: \n"); 
 	for (ArrayOfBaseProcessInputsConstIter it = m_TypeOfArrayItems.begin(); it != m_TypeOfArrayItems.end(); it++)
 		(*it)->PrintDebugInfo(iSpaceLeft + 2);
@@ -1687,7 +1736,7 @@ void InputBlock::PrintDebugInfo(int iSpaceLeft) const
 {
 	PutsEmpty(iSpaceLeft);
 	printf("--- BEGIN: INPUT BLOCK DEBUG ---\n");
-	PutsEmpty(iSpaceLeft);printf("There are %d inputs on this block\n", m_InputsInBlock.size());
+	PutsEmpty(iSpaceLeft);printf("There are %lu inputs on this block\n", m_InputsInBlock.size());
 	for (ArrayOfBaseProcessInputsConstIter it = m_InputsInBlock.begin(); it != m_InputsInBlock.end(); it++)
 	{
 		PutsEmpty(iSpaceLeft); (*it)->PrintDebugInfo(iSpaceLeft + 2);

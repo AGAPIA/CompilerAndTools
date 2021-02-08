@@ -4,6 +4,10 @@
 #include <string.h>
 #include <stdio.h>
 
+#ifdef _WIN32
+	#define strdup _strdup
+#endif
+
 using namespace std;
 
 static char sBufferString[4096];
@@ -173,7 +177,7 @@ int ParserProcessesVector::ReadNextToken(const char *codeLine, ParsedToken& outp
 			return false;
 		}
 
-		char *copyIdentifier = _strdup(outputToken.data.stringData);
+		char *copyIdentifier = strdup(outputToken.data.stringData);
 		outputToken.data.stringData = copyIdentifier;
 
 		// Get the token after comma
@@ -245,7 +249,7 @@ bool ParserProcessesVector::ParseVectorAccessLine(const char* codeLine, int line
 	// If string type, we need to store it somewhere in memory
 	if (mVectorIndex.type == TOKEN_IDENTIFIER)
 	{
-		mVectorIndex.data.stringData = _strdup(mVectorIndex.data.stringData);
+		mVectorIndex.data.stringData = strdup(mVectorIndex.data.stringData);
 	}
 	//-----------------------------------------------------------------------
 

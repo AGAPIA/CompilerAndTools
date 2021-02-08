@@ -24,7 +24,7 @@ namespace SchedulerCO
 	{
 	public:
 		TaskDef():
-			request(-1),
+			request(MPI_REQUEST_NULL),
 			flag(0),
 			pTaskData(NULL),
 			iSizeOfTask(0)
@@ -34,7 +34,8 @@ namespace SchedulerCO
 		{
 			if (pTaskData)
 			{
-				delete [] pTaskData;
+				// void* delete is undefined behaviour (cast to char*?)
+				// delete [] pTaskData;
 				pTaskData = NULL;
 			}
 		}
@@ -63,7 +64,8 @@ namespace SchedulerCO
 		{
 			if (pResultData)
 			{
-				delete [] pResultData;
+				// void* delete is undefined behaviour (cast to char*?)
+				// delete [] pResultData;
 				pResultData = NULL;
 			}
 		}

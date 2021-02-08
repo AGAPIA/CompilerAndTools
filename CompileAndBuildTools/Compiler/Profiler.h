@@ -1,6 +1,6 @@
 #ifndef TIMER_H
 #define TIMER_H
-
+#include <cstdint>
 class Timer
 {
 public:
@@ -16,7 +16,7 @@ public:
 	void Show();
 private:
 	double	mPCFreq;
-	__int64 mCounterStart;
+	int64_t mCounterStart;
 };
 
 #endif

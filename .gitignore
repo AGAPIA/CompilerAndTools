@@ -22,3 +22,7 @@ CompileAndBuildTools/.vs/Compiler/v16/.suo
 *.log
 *.obj
 *.opendb
+CompileAndBuildTools/build/
+CompileAndBuildTools/ModulesAnalyzer/.vs
+CompileAndBuildTools/GenerateApp/build
+CompileAndBuildTools/ModulesAnalyzer/build

@@ -4,6 +4,7 @@
 #include "CompilationBlackbox.h"
 #include "BaseNode.h"
 #include "calc3_utils.h"
+#include "Redefinitions.h"
 
 #define INPUT_FILE_NAME	"MainInput.txt"
 
@@ -18,8 +19,8 @@ void MainInputParser::ParseSimpleDataType(FILE *&f, IDataTypeItem *pDataType, Da
 	fscanf(f, "%s", strBufferOfRead);
 	if (strcmp(szVarName, strBufferOfRead))
 	{
-		char szErrorBuff[1024];
-		sprintf_s(szErrorBuff, 1024, "Input for module main: Expected value for variable %s but the next variable in input file is for variable %s. The variables should be given in order, from north and then west.\n", szVarName, strBufferOfRead);
+		char szErrorBuff[2048];
+		sprintf_s(szErrorBuff, 2048, "Input for module main: Expected value for variable %s but the next variable in input file is for variable %s. The variables should be given in order, from north and then west.\n", szVarName, strBufferOfRead);
 		PrintCompileError(-1, szErrorBuff);
 		return ;
 	}

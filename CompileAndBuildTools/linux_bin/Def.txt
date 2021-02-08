@@ -1,0 +1,7 @@
+% // Include files
+#include <stdio.h>
+#include <cmath>
+% // Additional include directories
+% // Additional library directories
+% // Additional linker libs/dll etc
+% // Additional source files
